@@ -1,8 +1,8 @@
 # swrcalc
 
-Last year at [Ham Radio University](http://hamradiouniversity.org/), [Mike WY2U](https://www.qrz.com/db/wy2u) gave an excellent presentation on [Antenna Power Flow and SWR](http://hamradiouniversity.org/wp-content/uploads/2020/01/power_flow6.pptx) (PowerPoint). It was heavy on math, but clarified some things for me about calculating and understanding the efficiency of antenna systems and how antenna tuners work that I hadn't run across in the [ARRL Handbook](http://www.arrl.org/shop/ARRL-Handbook/) or [Antenna Book](http://www.arrl.org/shop/ARRL-Antenna-Book/).
+Last year at [Ham Radio University](http://hamradiouniversity.org/), [Mike WY2U](https://www.qrz.com/db/wy2u) gave an excellent presentation on [Antenna Power Flow and SWR](http://hamradiouniversity.org/wp-content/uploads/2020/01/power_flow6.pptx). It was heavy on math, but clarified some things for me about calculating and understanding the efficiency of antenna systems and how antenna tuners work that I hadn't run across in the [ARRL Handbook](http://www.arrl.org/shop/ARRL-Handbook/) or [Antenna Book](http://www.arrl.org/shop/ARRL-Antenna-Book/).
 
-Inspired by the [spreadsheet](http://hamradiouniversity.org/wp-content/uploads/2020/01/VSWR_Loss_13b.xlsx) (Excel) he used to demonstrate these concepts during his talk, I developed a similar tool that can be used at the command line:
+Inspired by the [spreadsheet](http://hamradiouniversity.org/wp-content/uploads/2020/01/VSWR_Loss_13b.xlsx) he used to demonstrate these concepts during his talk, I developed a similar tool that can be used at the command line:
 
     % swrcalc -h
     usage: swrcalc [-h] [-g GAIN] -s SWR [-t LOSS] [-a LOSS] [-n LOSS]
