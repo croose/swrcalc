@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
-# $Id: swrcalc,v 3.12 2020/10/26 14:41:36 winston Exp $
+# $Id: swrcalc,v 3.13 2020/10/26 15:00:05 winston Exp $
 #
 # Calculate antenna system efficiency, tuner stress, and effective gain
 
-import argparse, sys
+import argparse
 from math import log10
+from sys import exit
 
 def invalid_input ():
     print("error: invalid input")
-    sys.exit(1)
+    exit(1)
 
 def loss_error ():
     print("error: loss is too high, no power radiated")
-    sys.exit(1)
+    exit(1)
 
 def no_tuner (rl_xmtr, gain_ant, loss_xmtr_ant):
     rl_ant = rl_xmtr - (2 * loss_xmtr_ant)
@@ -22,7 +23,7 @@ def no_tuner (rl_xmtr, gain_ant, loss_xmtr_ant):
     except ValueError:
         loss_error()
     total_loss = loss_xmtr_ant + ml_ant
-    pwr_load = 10 ** -(total_loss / 10)                # power delivered to antenna
+    pwr_load = 10 ** -(total_loss / 10)           # power delivered to antenna
 
     print()
     print("Antenna system efficiency: {:.0f}%".format(pwr_load * 100))
@@ -87,8 +88,8 @@ def main ():
     if swr_xmtr <= 1:
         invalid_input()
 
-    r_xmtr = (swr_xmtr - 1) / (swr_xmtr + 1)               # reflection coefficient
-    rl_xmtr = -20 * log10(r_xmtr)                     # return loss
+    r_xmtr = (swr_xmtr - 1) / (swr_xmtr + 1)    # reflection coefficient
+    rl_xmtr = -20 * log10(r_xmtr)               # return loss
 
     if args.no_tuner is not None:
         loss_xmtr_ant = args.no_tuner
