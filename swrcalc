@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# $Id: swrcalc,v 3.14 2020/10/26 19:01:05 winston Exp $
+# $Id: swrcalc,v 3.15 2020/10/26 19:58:10 winston Exp $
 #
 # Calculate antenna system efficiency, tuner stress, and effective gain
 
@@ -81,7 +81,7 @@ def main ():
     swr_xmtr = args.swr
 
     if swr_xmtr <= 1:
-        exit("error: invalid input")
+        exit("error: invalid input (SWR cannot be <= 1)")
 
     r_xmtr = (swr_xmtr - 1) / (swr_xmtr + 1)    # reflection coefficient
     rl_xmtr = -20 * log10(r_xmtr)               # return loss
