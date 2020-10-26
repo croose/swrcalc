@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-# $Id: swrcalc,v 3.11 2020/10/23 13:47:17 winston Exp $
+# $Id: swrcalc,v 3.12 2020/10/26 14:41:36 winston Exp $
 #
 # Calculate antenna system efficiency, tuner stress, and effective gain
 
-import argparse, math, sys
+import argparse, sys
+from math import log10
 
 def invalid_input ():
     print("error: invalid input")
@@ -17,7 +18,7 @@ def no_tuner (rl_xmtr, gain_ant, loss_xmtr_ant):
     rl_ant = rl_xmtr - (2 * loss_xmtr_ant)
     r_ant = 10 ** -(rl_ant / 20)
     try:
-        ml_ant = -10 * math.log10(1 - (r_ant ** 2))    # mismatch loss
+        ml_ant = -10 * log10(1 - (r_ant ** 2))    # mismatch loss
     except ValueError:
         loss_error()
     total_loss = loss_xmtr_ant + ml_ant
@@ -35,7 +36,7 @@ def with_tuner (rl_xmtr, gain_ant, loss_xmtr_tun, loss_tuner_ant):
     rl_ant = rl_tun - (2 * loss_tuner_ant)
     r_ant = 10 ** -(rl_ant / 20)
     try:
-        ml_ant = -10 * math.log10(1 - (r_ant ** 2))    # mismatch loss
+        ml_ant = -10 * log10(1 - (r_ant ** 2))    # mismatch loss
     except ValueError:
         loss_error()
 
@@ -46,7 +47,7 @@ def with_tuner (rl_xmtr, gain_ant, loss_xmtr_tun, loss_tuner_ant):
         pwr_into_ant = pwr_into_tuner - loss_tuner_ant
         pwr_reflected = pwr_into_ant - rl_ant - loss_tuner_ant
         pwr_radiated = pwr_into_ant - ml_ant
-        drive_plus_reflected = 10 * math.log10(loss_xmtr_tun_ratio + (10 ** (pwr_reflected / 10)))
+        drive_plus_reflected = 10 * log10(loss_xmtr_tun_ratio + (10 ** (pwr_reflected / 10)))
         if drive_plus_reflected != pwr_into_tuner:
             pwr_into_tuner = drive_plus_reflected
         else:
@@ -87,7 +88,7 @@ def main ():
         invalid_input()
 
     r_xmtr = (swr_xmtr - 1) / (swr_xmtr + 1)               # reflection coefficient
-    rl_xmtr = -20 * math.log10(r_xmtr)                     # return loss
+    rl_xmtr = -20 * log10(r_xmtr)                     # return loss
 
     if args.no_tuner is not None:
         loss_xmtr_ant = args.no_tuner
