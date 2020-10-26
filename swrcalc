@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-# $Id: swrcalc,v 3.16 2020/10/26 21:22:16 winston Exp $
+# $Id: swrcalc,v 3.17 2020/10/26 21:28:19 winston Exp $
 #
-# Calculate antenna system efficiency, tuner stress, and effective gain
+# Calculate antenna system efficiency, tuner stress, and effective antenna gain
 
 import argparse
 from math import log10
@@ -68,8 +68,8 @@ def with_tuner (rl_xmtr, gain_ant, loss_xmtr_tun, loss_tuner_ant):
 
 def main ():
     parser = argparse.ArgumentParser(
-            description='Calculate antenna system efficiency,\
-            tuner stress, and effective antenna gain')
+            description='Calculate antenna system efficiency, '
+            'tuner stress, and effective antenna gain')
     parser.add_argument('-g', '--gain', type=float, help='antenna gain (dBi)',
             default=0)
     required = parser.add_argument_group('required')
