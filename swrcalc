@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# $Id: swrcalc,v 3.20 2020/10/27 12:46:15 winston Exp $
+# $Id: swrcalc,v 3.21 2020/10/27 16:12:36 winston Exp $
 #
 # Calculate antenna system efficiency, tuner stress, and effective antenna gain
 
@@ -9,21 +9,20 @@ from sys import exit
 
 
 def loss_error():
+    """Print an error message and exit if no power can be radiated"""
     exit("error: loss is too high, no power radiated")
 
 
 def no_tuner(rl_xmtr, gain_ant, loss_xmtr_ant):
-    rl_ant = rl_xmtr - (2 * loss_xmtr_ant)        # return loss at antenna
-
-    # reflection coefficient at antenna
-    r_ant = 10 ** -(rl_ant / 20)
+    """Determine power delivered to antenna and effective gain"""
+    rl_ant = rl_xmtr - (2*loss_xmtr_ant)          # return loss at antenna
+    r_ant = 10 ** -(rl_ant/20)                    # reflection coefficient
     try:
-        ml_ant = -10 * log10(1 - (r_ant ** 2))    # mismatch loss at antenna
+        ml_ant = -10 * log10(1-(r_ant**2))        # mismatch loss at antenna
     except ValueError:
         loss_error()
     total_loss = loss_xmtr_ant + ml_ant
-    pwr_load = 10 ** -(total_loss / 10)           # power delivered to antenna
-
+    pwr_load = 10 ** -(total_loss/10)             # power delivered to antenna
     print()
     print("Antenna system efficiency: {:.0f}%".format(pwr_load * 100))
     if gain_ant != 0:
@@ -33,19 +32,16 @@ def no_tuner(rl_xmtr, gain_ant, loss_xmtr_ant):
 
 
 def with_tuner(rl_xmtr, gain_ant, loss_xmtr_tun, loss_tuner_ant):
-    rl_tun = rl_xmtr - (2 * loss_xmtr_tun)        # return loss at tuner
-    rl_ant = rl_tun - (2 * loss_tuner_ant)        # return loss at antenna
-
-    # reflection coefficient at antenna
-    r_ant = 10 ** -(rl_ant / 20)
+    """Calculate efficiency, tuner stress, and gain"""
+    rl_tun = rl_xmtr - (2*loss_xmtr_tun)          # return loss at tuner
+    rl_ant = rl_tun - (2*loss_tuner_ant)          # return loss at antenna
+    r_ant = 10 ** -(rl_ant/20)                    # reflection coefficient
     try:
-        ml_ant = -10 * log10(1 - (r_ant ** 2))    # mismatch loss at antenna
+        ml_ant = -10 * log10(1-(r_ant**2))        # mismatch loss at antenna
     except ValueError:
         loss_error()
-
-    loss_xmtr_tun_ratio = 10 ** -(loss_xmtr_tun / 10)
+    loss_xmtr_tun_ratio = 10 ** -(loss_xmtr_tun/10)
     pwr_into_tuner = -loss_xmtr_tun
-
     # loop to find steady state where forward power, reflected power,
     # power into load, and delivered power are in equilibrium
     while True:
@@ -53,17 +49,16 @@ def with_tuner(rl_xmtr, gain_ant, loss_xmtr_tun, loss_tuner_ant):
         pwr_reflected = pwr_into_ant - rl_ant - loss_tuner_ant
         pwr_radiated = pwr_into_ant - ml_ant
         drive_plus_reflected = 10 * log10(loss_xmtr_tun_ratio
-                                          + (10 ** (pwr_reflected / 10)))
+                                          + (10**(pwr_reflected/10)))
         if drive_plus_reflected != pwr_into_tuner:
             pwr_into_tuner = drive_plus_reflected
         else:
             break
-
     print()
     print("Antenna system efficiency: {:.0f}%"
-          .format(10 ** (pwr_radiated / 10) * 100))
+          .format(10**(pwr_radiated/10) * 100))
     print("Maximum power at tuner: {:.2f}x"
-          .format(10 ** (pwr_into_tuner / 10)))
+          .format(10 ** (pwr_into_tuner/10)))
     if gain_ant != 0:
         max_pwr = pwr_radiated + gain_ant
         print("Effective antenna gain: {:.2f} dBi".format(max_pwr))
@@ -71,6 +66,7 @@ def with_tuner(rl_xmtr, gain_ant, loss_xmtr_tun, loss_tuner_ant):
 
 
 def main():
+    """Setup argument parser and pass return loss to appropriate function"""
     parser = argparse.ArgumentParser(
             description='Calculate antenna system efficiency, '
             'tuner stress, and effective antenna gain')
@@ -94,24 +90,18 @@ def main():
             help='loss between output of xmtr and input of antenna (dB)',
             metavar='LOSS')
     args = parser.parse_args()
-
     if args.no_tuner and (args.tuner_ant or args.xmtr_tuner):
         parser.error("cannot use --no-tuner with --tuner-ant or --xmtr-tuner")
     elif args.no_tuner is None and args.tuner_ant is None \
             and args.xmtr_tuner is None:
         parser.error("either --no-tuner or at least one one of\n"
                      "--tuner-ant and --xmtr-tuner are required")
-
     gain_ant = args.gain
     swr_xmtr = args.swr
-
     if swr_xmtr <= 1:
         exit("error: invalid input (SWR cannot be <= 1)")
-
-    # reflection coefficient at transmitter
-    r_xmtr = (swr_xmtr - 1) / (swr_xmtr + 1)
+    r_xmtr = (swr_xmtr-1) / (swr_xmtr+1)          # reflection coefficient
     rl_xmtr = -20 * log10(r_xmtr)                 # return loss at transmitter
-
     if args.no_tuner is not None:
         loss_xmtr_ant = args.no_tuner
         no_tuner(rl_xmtr, gain_ant, loss_xmtr_ant)
