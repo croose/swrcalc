@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# $Id: swrcalc,v 3.21 2020/10/27 16:12:36 winston Exp $
+# $Id: swrcalc,v 3.22 2020/11/23 21:40:36 winston Exp $
 #
 # Calculate antenna system efficiency, tuner stress, and effective antenna gain
 
@@ -94,8 +94,8 @@ def main():
         parser.error("cannot use --no-tuner with --tuner-ant or --xmtr-tuner")
     elif args.no_tuner is None and args.tuner_ant is None \
             and args.xmtr_tuner is None:
-        parser.error("either --no-tuner or at least one one of\n"
-                     "--tuner-ant and --xmtr-tuner are required")
+        parser.error("either -n/--no-tuner or at least one one of\n"
+                     "    -a/--tuner-ant and -t/--xmtr-tuner are required")
     gain_ant = args.gain
     swr_xmtr = args.swr
     if swr_xmtr <= 1:
